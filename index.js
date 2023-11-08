@@ -183,7 +183,6 @@ async function run() {
     
 
     // comments section 
-
     app.get('/comments', async(req,res)=>{
       const result = await CommentsCollection.find().toArray();
       res.send(result);
@@ -209,6 +208,7 @@ async function run() {
 
 
 
+      
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
