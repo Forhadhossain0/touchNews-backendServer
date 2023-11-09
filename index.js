@@ -10,10 +10,10 @@ const port = process.env.PORT || 5000;
 
 app.use(cors({
   origin:[
-    // 'http://localhost:5173',
-    // 'http://localhost:5174',
-    'https://fotouch-project.web.app', 
-    'https://fotouch-project.firebaseapp.com'
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://fotouch-project.firebaseapp.com',
+    'https://fotouch-project.web.app',
   ],
   credentials:true
 }));
@@ -59,7 +59,8 @@ const verifyToken = async(req,res,next)=> {
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
+
     const BlogsCollection = client.db('touchnewsDB').collection('blogs')
     const MYusers = client.db('touchnewsDB').collection('users')
     const CommentsCollection = client.db('touchnewsDB').collection('comments')
@@ -72,15 +73,20 @@ async function run() {
       const user = req.body;
       console.log('jwts :',user)
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn : '1h'});
+      // res.cookie('token', token, {
+      //         httpOnly: true, secure: true , sameSite: 'none'  // sameSite: 'none' its use will cokkie will not come in fron end so comment it 
+      //  })
       res.cookie('token', token, {
-              httpOnly: true, secure: false ,  // sameSite: 'none' //its use will cokkie will not come in fron end so comment it 
-       })
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        })
        .send({success: true});
   })
   app.post('/logout' ,   async (req,res) => {
       const user = req.body;
       console.log(user)
-      res.clearCookie('token', {maxAge: 0}).send({success: true})    
+      res.clearCookie('token', {maxAge: 0,sameSite: 'none' ,secure:true}).send({success: true})    
   })
 
 
@@ -174,7 +180,6 @@ async function run() {
       const result = await MYusers.updateOne(query,UpdateUser)
       res.send(result)
     })
-
 
     app.delete('/users/:id', async(req,res)=>{
       const id = req.params.id;
