@@ -12,7 +12,7 @@ app.use(cors({
   origin:[
     // 'http://localhost:5173',
     // 'http://localhost:5174',
-    'https://fotouch-project.web.app',
+    'https://fotouch-project.web.app', 
     'https://fotouch-project.firebaseapp.com'
   ],
   credentials:true
